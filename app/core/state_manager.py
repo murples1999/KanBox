@@ -1,13 +1,27 @@
 #state_manager.py
 
 import json
+import os
 from app.models.project import Project
 
 class StateManager:
     def __init__(self, save_file="kanbox_data.json"):
+
+        self.save_dir = self.get_save_directory()
+        os.makedirs(self.save_dir, exist_ok=True)
+
+        self.save_file = os.path.join(self.save_dir, save_file)
+
         self.projects = []
         self.last_open_project = None
-        self.save_file = save_file
+
+    def get_save_directory(self):
+        if os.name == "posix":  # macOS and Linux
+            return os.path.expanduser("~/Documents/KanBox")
+        elif os.name == "nt":  # Windows
+            return os.path.join(os.getenv("APPDATA"), "KanBox")
+        else:  # Fallback for other systems
+            return os.path.expanduser("~/.kanbox")
 
     def add_project(self, project):
         self.projects.append(project)
