@@ -26,3 +26,8 @@ assets/dialogues/__pycache__/add_project_dialogue.cpython-312.pyc
 assets/dialogues/__pycache__/delete_card_dialogue.cpython-312.pyc
 assets/dialogues/__pycache__/remove_project_dialogue.cpython-312.pyc
 assets/dialogues/__pycache__/rename_card_dialogue.cpython-312.pyc
+dist/KanBox
+dist/KanBox.app/Contents/Info.plist
+dist/KanBox.app/Contents/_CodeSignature/CodeResources
+dist/KanBox.app/Contents/MacOS/KanBox
+dist/KanBox.app/Contents/Resources/icon.icns
