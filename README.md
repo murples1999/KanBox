@@ -15,6 +15,11 @@ KanBox is a unique productivity application centered around Nested KanBan Boards
 
 ## Installation
 
+1. Download the .app from Releases (MacOS only)
+2. Drop .app into Applications Folder
+
+OR
+
 ### Prerequisites
 - Python 3.8+ installed
 - `PySide6` library for GUI components
@@ -69,8 +74,15 @@ app/
 ├── core/             # Core logic (AppManager, StateManager, NavigationManager)
 ├── models/           # Data models (Board, Project, Card, ListColumn)
 ├── ui/               # UI components (Sidebar, BoardView, CardView, etc.)
-├── assets/           # Styles and dialogues
 │
+
+assets/
+│
+├── styles.py         # Styles for UI Components and Modules
+├── dialogues/        # Custom Dialogue Boxes 
+├── icons/            # App Icon
+│
+
 main.py               # App entry point
 requirements.txt      # Python dependencies
 README.md             # Project README

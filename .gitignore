@@ -31,3 +31,4 @@ dist/KanBox.app/Contents/Info.plist
 dist/KanBox.app/Contents/_CodeSignature/CodeResources
 dist/KanBox.app/Contents/MacOS/KanBox
 dist/KanBox.app/Contents/Resources/icon.icns
+dist/KanBox.zip
