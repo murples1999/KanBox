@@ -1,4 +1,4 @@
-# KanBox - Nested KanBan Board Productivity App for Mac
+# KanBox - Nested KanBan Board Productivity App
 
 KanBox is a unique productivity application centered around Nested KanBan Boards, offering a powerful and flexible way to organize tasks, projects, and workflows. Unlike traditional to-do lists, KanBox lets you create hierarchies of boards within boards, making it the ideal choice for managing complex, multi-level projects.
 
