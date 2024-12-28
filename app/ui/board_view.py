@@ -2,9 +2,9 @@
 
 from functools import partial
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QScrollArea, QPushButton, QMessageBox, 
-                               QHBoxLayout, QLabel, QSizePolicy, QPlainTextEdit)
+                               QHBoxLayout, QLabel, QSizePolicy, QTextEdit, QPlainTextEdit)
 from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QTextOption, QShortcut, QKeySequence
+from PySide6.QtGui import QTextOption, QShortcut, QKeySequence, QTextCursor
 from app.ui.column_view import ColumnView
 from app.models.list_column import ListColumn
 from assets.styles import Styles
@@ -40,21 +40,32 @@ class BoardView(QWidget):
         self.top_bar_layout.addWidget(self.back_button)
 
         # Description area
-        self.board_description = QPlainTextEdit(self)
+        self.board_description = QTextEdit(self)
         self.board_description.setPlaceholderText("Enter a description for this board...")
         self.board_description.setStyleSheet("""
-            QPlainTextEdit {
+            QTextEdit {
                 background-color: transparent;
                 border: none;
                 font-size: 14px;
                 color: white;
+                text-align: center;
             }
         """)
         self.board_description.setWordWrapMode(QTextOption.WrapAtWordBoundaryOrAnywhere)
         self.board_description.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.board_description.textChanged.connect(self.adjust_description_height)
-        self.board_description.focusOutEvent = self.save_description
-        self.layout.addWidget(self.board_description)
+        self.board_description.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.board_description.setAlignment(Qt.AlignCenter)
+        self.board_description.textChanged.connect(self.save_description)
+
+        # Description container
+        self.description_container = QWidget()
+        self.description_layout = QHBoxLayout()
+        self.description_layout.setContentsMargins(0, 0, 0, 0)
+        self.description_layout.setAlignment(Qt.AlignCenter)
+        self.description_container.setFixedHeight(50)
+        self.description_container.setLayout(self.description_layout)
+        self.description_layout.addWidget(self.board_description)
+        self.layout.addWidget(self.description_container)
 
         # Scrollable area
         self.scroll_area = QScrollArea()
@@ -106,11 +117,10 @@ class BoardView(QWidget):
         
         self.board_description.setFixedHeight(total_height)
 
-    def save_description(self, event):
+    def save_description(self):
         if self.board:
             self.board.description = self.board_description.toPlainText().strip()
             self.app_manager.save_state()
-        QPlainTextEdit.focusOutEvent(self.board_description, event)
 
     def update_breadcrumbs(self):
         while self.breadcrumb_layout.count():
@@ -165,7 +175,7 @@ class BoardView(QWidget):
                 widget.deleteLater()
 
         for list_column in board.lists:
-            column_view = ColumnView(list_column, parent=self, app_manager=self.app_manager)
+            column_view = ColumnView(list_column, parent=self, app_manager=self.app_manager, board_view=self)
             self.content_layout.addWidget(column_view)
 
         self.create_button_wrapper()
@@ -204,11 +214,26 @@ class BoardView(QWidget):
 
         self.scroll_to_right()
 
+    def move_column(self, current_index, new_index):
+        # Swap columns in the data structure
+        self.board.lists[current_index], self.board.lists[new_index] = (
+            self.board.lists[new_index],
+            self.board.lists[current_index],
+        )
+        
+        # Swap the widgets in the UI
+        widget = self.content_layout.takeAt(current_index).widget()
+        self.content_layout.insertWidget(new_index, widget)
+        
+        # Save the new state
+        self.app_manager.save_state()
+        self.display_board(self.board)
+
     def scroll_to_right(self):
         QTimer.singleShot(0, lambda: self.scroll_area.horizontalScrollBar().setValue(self.scroll_area.horizontalScrollBar().maximum()))
 
     def add_list_to_board(self, list_column):
-        column_view = ColumnView(list_column, parent=self, app_manager=self.app_manager)
+        column_view = ColumnView(list_column, parent=self, app_manager=self.app_manager, board_view=self)
         self.content_layout.insertWidget(self.content_layout.count() - 1, column_view)
 
     def remove_list_from_board(self, list_column_name):

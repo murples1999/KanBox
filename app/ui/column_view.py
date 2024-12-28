@@ -8,10 +8,11 @@ from assets.dialogues.rename_card_dialogue import RenameCardDialog
 from assets.dialogues.delete_card_dialogue import DeleteCardDialog
 
 class ColumnView(QWidget):
-    def __init__(self, list_column, app_manager, parent=None):
+    def __init__(self, list_column, app_manager, board_view, parent=None):
         super().__init__(parent)
         self.list_column = list_column
         self.app_manager = app_manager
+        self.board_view = board_view
 
         # Set column size constraints
         self.setFixedWidth(320)
@@ -173,14 +174,26 @@ class ColumnView(QWidget):
     def show_context_menu(self, pos):
         menu = QMenu(self)
         menu.setStyleSheet(Styles.context_menu_style)
+        move_left_action = menu.addAction("Move Left")
+        move_right_action = menu.addAction("Move Right")
         rename_action = menu.addAction("Rename Column")
         delete_action = menu.addAction("Delete Column")
 
         action = menu.exec(self.name_label.mapToGlobal(pos))
-        if action == rename_action:
+        if action == move_left_action:
+            self.move_column(-1)
+        elif action == move_right_action:
+            self.move_column(1)
+        elif action == rename_action:
             self.rename_column()
         elif action == delete_action:
             self.delete_column()
+
+    def move_column(self, direction):
+        current_index = self.board_view.content_layout.indexOf(self)
+        new_index = current_index + direction
+        if 0 <= new_index < self.board_view.content_layout.count():
+            self.board_view.move_column(current_index, new_index)
 
     def rename_column(self):
         dialog = RenameCardDialog(self.list_column.name, self)
